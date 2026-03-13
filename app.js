@@ -33,12 +33,9 @@ const manualArtist       = $('manual-artist');
 const manualTitle        = $('manual-title');
 const btnGenerateManual  = $('btn-generate-manual');
 const filterTabs         = document.querySelectorAll('.tab');
-const styleBtns          = document.querySelectorAll('.option-btn[data-style]');
-
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let searchType      = 'album';
-let cardStyle       = 'blurred-bg';
 let searchDebounce  = null;
 let selectedResult  = null;
 let manualImageUrl  = null;
@@ -275,16 +272,6 @@ async function selectResult(item, el) {
   });
 }
 
-// ─── Card Style options ───────────────────────────────────────────────────────
-
-styleBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    styleBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    cardStyle = btn.dataset.style;
-    regenerateCurrentCard();
-  });
-});
 
 function regenerateCurrentCard() {
   if (manualImageUrl) {
@@ -354,10 +341,7 @@ async function generateCard(opts) {
   previewArea.classList.add('generating');
 
   try {
-    await CardGenerator.render(cardCanvas, {
-      ...opts,
-      style: cardStyle,
-    });
+    await CardGenerator.render(cardCanvas, opts);
 
     cardCanvas.classList.remove('hidden');
     btnDownload.disabled = false;
