@@ -34,13 +34,11 @@ const manualTitle        = $('manual-title');
 const btnGenerateManual  = $('btn-generate-manual');
 const filterTabs         = document.querySelectorAll('.tab');
 const styleBtns          = document.querySelectorAll('.option-btn[data-style]');
-const layoutBtns         = document.querySelectorAll('.option-btn[data-layout]');
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let searchType      = 'album';
 let cardStyle       = 'blurred-bg';
-let cardLayout      = 'left-art';
 let searchDebounce  = null;
 let selectedResult  = null;
 let manualImageUrl  = null;
@@ -272,27 +270,18 @@ async function selectResult(item, el) {
     artUrl:     item.artUrl,
     title:      item.title,
     subtitle:   item.subtitle,
-    detail:     item.detail,
+    type:       item.type,
     spotifyUri: item.spotifyUri,
   });
 }
 
-// ─── Card Style / Layout options ──────────────────────────────────────────────
+// ─── Card Style options ───────────────────────────────────────────────────────
 
 styleBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     styleBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     cardStyle = btn.dataset.style;
-    regenerateCurrentCard();
-  });
-});
-
-layoutBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    layoutBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    cardLayout = btn.dataset.layout;
     regenerateCurrentCard();
   });
 });
@@ -311,7 +300,7 @@ function regenerateCurrentCard() {
       artUrl:     selectedResult.artUrl,
       title:      selectedResult.title,
       subtitle:   selectedResult.subtitle,
-      detail:     selectedResult.detail,
+      type:       selectedResult.type,
       spotifyUri: selectedResult.spotifyUri,
     });
   }
@@ -367,8 +356,7 @@ async function generateCard(opts) {
   try {
     await CardGenerator.render(cardCanvas, {
       ...opts,
-      style:  cardStyle,
-      layout: cardLayout,
+      style: cardStyle,
     });
 
     cardCanvas.classList.remove('hidden');
