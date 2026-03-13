@@ -186,13 +186,15 @@ function measureWrappedLines(ctx, text, maxWidth, maxLines) {
   }
   if (line && lines.length < maxLines) lines.push(line);
 
-  // Truncate last line with ellipsis if we hit the cap
+  // Truncate last line with ellipsis only if it actually overflows maxWidth
   if (lines.length === maxLines) {
     let last = lines[maxLines - 1];
-    while (last.length > 0 && ctx.measureText(last + '…').width > maxWidth) {
-      last = last.slice(0, -1).trimEnd();
+    if (ctx.measureText(last).width > maxWidth) {
+      while (last.length > 0 && ctx.measureText(last + '…').width > maxWidth) {
+        last = last.slice(0, -1).trimEnd();
+      }
+      lines[maxLines - 1] = last + '…';
     }
-    lines[maxLines - 1] = last + '…';
   }
 
   return lines;

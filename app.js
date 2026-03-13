@@ -33,6 +33,11 @@ const manualArtist       = $('manual-artist');
 const manualTitle        = $('manual-title');
 const btnGenerateManual  = $('btn-generate-manual');
 const filterTabs         = document.querySelectorAll('.tab');
+const spotifyUriDisplay  = $('spotify-uri-display');
+const btnCopyUri         = $('btn-copy-uri');
+const iconCopy           = $('icon-copy');
+const iconCheck          = $('icon-check');
+
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let searchType      = 'album';
@@ -262,6 +267,7 @@ async function selectResult(item, el) {
 
   selectedResult = item;
   manualImageUrl = null;
+  setSpotifyUri(item.spotifyUri);
 
   await generateCard({
     artUrl:     item.artUrl,
@@ -306,6 +312,7 @@ fileUpload.addEventListener('change', e => {
   // Clear Spotify selection
   document.querySelectorAll('.result-item.selected').forEach(i => i.classList.remove('selected'));
   selectedResult = null;
+  setSpotifyUri('');
 
   // Auto-generate with a blank title so user can see the layout
   generateCard({ artUrl: url, title: manualTitle.value || 'My Album', subtitle: manualArtist.value || '' });
@@ -360,6 +367,27 @@ async function generateCard(opts) {
     previewArea.classList.remove('generating');
   }
 }
+
+// ─── Spotify URI bar ──────────────────────────────────────────────────────────
+
+function setSpotifyUri(uri) {
+  spotifyUriDisplay.value = uri || '';
+  btnCopyUri.disabled = !uri;
+}
+
+let copyResetTimeout;
+btnCopyUri.addEventListener('click', async () => {
+  const uri = spotifyUriDisplay.value;
+  if (!uri) return;
+  await navigator.clipboard.writeText(uri);
+  iconCopy.classList.add('hidden');
+  iconCheck.classList.remove('hidden');
+  clearTimeout(copyResetTimeout);
+  copyResetTimeout = setTimeout(() => {
+    iconCopy.classList.remove('hidden');
+    iconCheck.classList.add('hidden');
+  }, 2000);
+});
 
 // ─── Download ─────────────────────────────────────────────────────────────────
 
