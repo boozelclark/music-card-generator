@@ -119,6 +119,18 @@
         </div>
       </div>
 
+      <div class="spotify-uri-bar" id="spotify-uri-bar">
+        <label class="uri-label">Spotify URI</label>
+        <div class="uri-input-wrap">
+          <input type="text" id="spotify-uri-display" class="text-input uri-input" readonly placeholder="Select an album or playlist to see its URI" />
+          <button id="btn-copy-uri" class="btn btn-ghost btn-copy" title="Copy to clipboard" disabled>
+            <svg id="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg id="icon-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden"><polyline points="20 6 9 17 4 12"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+
       <div class="card-preview-area" id="card-preview-area">
         <div class="card-empty-state" id="card-empty-state">
           <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25">
