@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music Card Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect width="28" height="28" rx="6" fill="#1DB954"/>
+          <path d="M14 6C9.58 6 6 9.58 6 14s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm3.67 11.55c-.15.24-.47.32-.71.17-1.94-1.19-4.39-1.46-7.27-.8-.28.06-.56-.12-.62-.4-.06-.28.12-.56.4-.62 3.15-.72 5.85-.41 8.03.92.24.15.32.47.17.73zm.98-2.18c-.19.3-.59.4-.89.21-2.22-1.36-5.6-1.76-8.23-.96-.34.1-.7-.09-.8-.43-.1-.34.09-.7.43-.8 3-.91 6.73-.47 9.28 1.1.3.18.4.59.21.88zm.08-2.27C16.17 11.5 12.22 11.37 9.6 12.14c-.41.12-.84-.11-.96-.52-.12-.41.11-.84.52-.96 3.02-.92 8.04-.74 11.21 1.11.38.22.51.71.29 1.09-.22.37-.71.5-1.09.28l.16.96z" fill="white"/>
+        </svg>
+        <span>Music Card Generator</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-settings" class="btn btn-ghost" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </button>
+        <button id="btn-spotify-connect" class="btn btn-spotify">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+          <span id="spotify-connect-label">Connect Spotify</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Setup Banner (shown when no client ID configured) -->
+  <div id="setup-banner" class="setup-banner hidden">
+    <div class="setup-banner-inner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>A Spotify Client ID is required to search. <button class="link-btn" id="banner-open-settings">Open Settings</button> to add yours.</span>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <main class="main">
+    <!-- Left Panel: Search -->
+    <section class="panel panel-search">
+      <div class="search-area">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search albums, artists, playlists…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="btn-clear-search" class="btn-clear hidden" title="Clear">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs" role="tablist">
+          <button class="tab active" data-type="album" role="tab">Albums</button>
+          <button class="tab" data-type="track" role="tab">Tracks</button>
+          <button class="tab" data-type="playlist" role="tab">Playlists</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results-container" class="results-container">
+        <div class="empty-state" id="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <p>Search for an album, track, or playlist<br/>to generate a card</p>
+        </div>
+        <div id="results-list" class="results-list hidden"></div>
+        <div id="results-loading" class="results-loading hidden">
+          <div class="spinner"></div>
+          <span>Searching…</span>
+        </div>
+        <div id="results-error" class="results-error hidden"></div>
+      </div>
+
+      <!-- Manual upload fallback -->
+      <div class="manual-section">
+        <p class="divider-text">or use your own artwork</p>
+        <label class="upload-label" for="file-upload">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Image
+        </label>
+        <input type="file" id="file-upload" accept="image/*" class="hidden" />
+        <div id="manual-title-wrap" class="manual-title-wrap hidden">
+          <input type="text" id="manual-artist" class="text-input" placeholder="Artist name" />
+          <input type="text" id="manual-title" class="text-input" placeholder="Album / Track title" />
+          <button id="btn-generate-manual" class="btn btn-primary">Generate Card</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Card Preview -->
+    <section class="panel panel-preview">
+      <div class="preview-header">
+        <h2>Card Preview</h2>
+        <div class="preview-controls">
+          <div class="card-size-info">CR80 · 85.6 × 54 mm · 300 DPI</div>
+          <button id="btn-download" class="btn btn-primary" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PNG
+          </button>
+        </div>
+      </div>
+
+      <div class="card-preview-area" id="card-preview-area">
+        <div class="card-empty-state" id="card-empty-state">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          <p>Select a result to preview your card</p>
+        </div>
+        <canvas id="card-canvas" class="card-canvas hidden"></canvas>
+      </div>
+
+      <!-- Card options -->
+      <div class="card-options" id="card-options">
+        <div class="option-group">
+          <label class="option-label">Style</label>
+          <div class="option-buttons">
+            <button class="option-btn active" data-style="blurred-bg">Blur BG</button>
+            <button class="option-btn" data-style="solid-dark">Dark</button>
+            <button class="option-btn" data-style="solid-light">Light</button>
+          </div>
+        </div>
+        <div class="option-group">
+          <label class="option-label">Layout</label>
+          <div class="option-buttons">
+            <button class="option-btn active" data-layout="left-art">Art Left</button>
+            <button class="option-btn" data-layout="full-art">Full Art</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Modal -->
+  <div id="modal-settings" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-settings-title">Settings</h2>
+        <button class="modal-close" id="btn-close-settings" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-section">
+          <h3>Spotify API</h3>
+          <p class="settings-desc">
+            To search Spotify, you need a free Spotify Developer app.
+            <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create one here</a>,
+            then add <code id="redirect-uri-display"></code> as a Redirect URI in your app settings.
+          </p>
+          <div class="form-group">
+            <label for="input-client-id">Client ID</label>
+            <input type="text" id="input-client-id" class="text-input" placeholder="Paste your Spotify Client ID" spellcheck="false" />
+          </div>
+          <div class="form-group">
+            <label for="input-redirect-uri">Redirect URI <span class="label-hint">(must match exactly in Spotify dashboard)</span></label>
+            <input type="text" id="input-redirect-uri" class="text-input" readonly />
+          </div>
+          <div class="settings-actions">
+            <button id="btn-save-settings" class="btn btn-primary">Save</button>
+            <button id="btn-disconnect-spotify" class="btn btn-ghost btn-danger hidden">Disconnect Spotify</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="spotify.js"></script>
+  <script src="card-generator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
