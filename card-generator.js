@@ -26,22 +26,18 @@ const CardGenerator = {
    *
    * @param {HTMLCanvasElement} canvas
    * @param {object} opts
-   * @param {string}  opts.artUrl       – image URL for album art
-   * @param {string}  opts.title        – album / playlist name
-   * @param {string}  opts.subtitle     – artist name (omitted for playlists)
-   * @param {string}  [opts.type]       – 'album' | 'track' | 'playlist'
-   * @param {string}  [opts.style]      – 'blurred-bg' | 'solid-dark' | 'solid-light'
-   * @param {string}  [opts.spotifyUri]
+   * @param {string}  opts.artUrl    – image URL for album art
+   * @param {string}  opts.title     – album / playlist name
+   * @param {string}  opts.subtitle  – artist name (omitted for playlists)
+   * @param {string}  [opts.type]    – 'album' | 'track' | 'playlist'
    * @returns {Promise<void>}
    */
   async render(canvas, opts) {
     const {
-      artUrl     = '',
-      title      = 'Unknown',
-      subtitle   = '',
-      type       = 'album',
-      style      = 'blurred-bg',
-      spotifyUri = '',
+      artUrl   = '',
+      title    = 'Unknown',
+      subtitle = '',
+      type     = 'album',
     } = opts;
 
     canvas.width  = CARD_W;
@@ -49,22 +45,22 @@ const CardGenerator = {
 
     const ctx = canvas.getContext('2d');
 
+    // Ensure web fonts are loaded before measuring/drawing text
+    await document.fonts.ready;
+
     let artImg = null;
     if (artUrl) {
       artImg = await loadImage(artUrl).catch(() => null);
     }
 
-    await drawPortraitCard(ctx, artImg, { title, subtitle, type, style, spotifyUri });
+    await drawPortraitCard(ctx, artImg, { title, subtitle, type });
   },
 };
 
 // ─── Main layout ──────────────────────────────────────────────────────────────
 
-async function drawPortraitCard(ctx, artImg, { title, subtitle, type, style, spotifyUri }) {
-  const isDark   = style !== 'solid-light';
-  const textClr  = isDark ? '#ffffff' : '#111118';
-  const muteClr  = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)';
-  const showArtist = type !== 'playlist' && subtitle;
+async function drawPortraitCard(ctx, artImg, { title, subtitle, type }) {
+  const showArtist = type !== 'playlist' && !!subtitle;
 
   // ── Clip card to rounded rect ──
   ctx.save();
@@ -75,73 +71,51 @@ async function drawPortraitCard(ctx, artImg, { title, subtitle, type, style, spo
   if (artImg) {
     drawCroppedImage(ctx, artImg, 0, 0, ART_SIZE, ART_SIZE);
   } else {
-    ctx.fillStyle = '#1a1a2a';
+    ctx.fillStyle = '#cccccc';
     ctx.fillRect(0, 0, ART_SIZE, ART_SIZE);
     drawMusicNotePlaceholder(ctx, ART_SIZE / 2, ART_SIZE / 2, 160);
   }
 
-  // ── Text zone background ──
-  if (style === 'solid-light') {
-    ctx.fillStyle = '#f5f5f5';
-    ctx.fillRect(0, TEXT_ZONE_Y, CARD_W, TEXT_ZONE_H);
-  } else if (style === 'solid-dark') {
-    ctx.fillStyle = '#111118';
-    ctx.fillRect(0, TEXT_ZONE_Y, CARD_W, TEXT_ZONE_H);
-  } else {
-    // blurred-bg: subtle blurred art tint + dark overlay
-    if (artImg) {
-      ctx.save();
-      ctx.filter = 'blur(28px)';
-      ctx.globalAlpha = 0.35;
-      drawCroppedImage(ctx, artImg, 0, TEXT_ZONE_Y, CARD_W, TEXT_ZONE_H);
-      ctx.filter = 'none';
-      ctx.globalAlpha = 1;
-      ctx.restore();
-    }
-    ctx.fillStyle = 'rgba(10, 10, 18, 0.78)';
-    ctx.fillRect(0, TEXT_ZONE_Y, CARD_W, TEXT_ZONE_H);
-  }
+  // ── Text zone: always white background ──
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, TEXT_ZONE_Y, CARD_W, TEXT_ZONE_H);
 
   ctx.restore();
 
-  // ── Text: centered in text zone ──
-  const padX    = px(60);
-  const maxW    = CARD_W - padX * 2;
+  // ── Text: black, centered in text zone ──
+  const padX       = px(56);
+  const maxW       = CARD_W - padX * 2;
+  const titleSize  = px(44);
+  const artistSize = px(28);
+  const lineGap    = px(16);
 
-  // Measure the text block height to vertically center it
-  const titleSize   = px(72);
-  const artistSize  = px(38);
-  const lineGap     = px(24);  // gap between title last line and artist
-
+  // Measure title lines first (so we can vertically center the whole block)
   ctx.font = `700 ${titleSize}px 'Inter', system-ui, sans-serif`;
-  const titleLines = measureWrappedLines(ctx, title, maxW, 2);
-  const titleBlockH = titleLines.length * (titleSize * 1.2);
+  const titleLines  = measureWrappedLines(ctx, title, maxW, 3);
+  const titleBlockH = titleLines.length * titleSize * 1.25;
 
-  let totalH = titleBlockH;
-  if (showArtist) totalH += lineGap + artistSize * 1.2;
+  const totalH = titleBlockH + (showArtist ? lineGap + artistSize * 1.25 : 0);
 
-  // Vertical center in text zone
   const zoneCenter = TEXT_ZONE_Y + TEXT_ZONE_H / 2;
-  let   drawY      = zoneCenter - totalH / 2 + titleSize; // baseline of first title line
+  const blockTop   = zoneCenter - totalH / 2;
 
   // Draw title
-  ctx.font      = `700 ${titleSize}px 'Inter', system-ui, sans-serif`;
-  ctx.fillStyle = textClr;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'alphabetic';
+  ctx.font         = `700 ${titleSize}px 'Inter', system-ui, sans-serif`;
+  ctx.fillStyle    = '#111111';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'top';
 
   titleLines.forEach((line, i) => {
-    ctx.fillText(line, CARD_W / 2, drawY + i * titleSize * 1.2);
+    ctx.fillText(line, CARD_W / 2, blockTop + i * titleSize * 1.25);
   });
 
   // Draw artist
   if (showArtist) {
-    const artistY = drawY + titleBlockH - titleSize + titleSize * 1.2 + lineGap + artistSize;
+    const artistY = blockTop + titleBlockH + lineGap;
     ctx.font      = `400 ${artistSize}px 'Inter', system-ui, sans-serif`;
-    ctx.fillStyle = muteClr;
-
-    const artistLines = measureWrappedLines(ctx, subtitle, maxW, 1);
-    ctx.fillText(artistLines[0] || subtitle, CARD_W / 2, artistY);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    const artistLine = measureWrappedLines(ctx, subtitle, maxW, 1)[0] || subtitle;
+    ctx.fillText(artistLine, CARD_W / 2, artistY);
   }
 }
 

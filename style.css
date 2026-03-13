@@ -415,10 +415,7 @@ code {
   justify-content: center;
   padding: 32px;
   min-height: 320px;
-  background:
-    radial-gradient(ellipse at 50% 50%, rgba(29,185,84,0.04) 0%, transparent 70%),
-    repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(255,255,255,0.02) 24px, rgba(255,255,255,0.02) 25px),
-    repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(255,255,255,0.02) 24px, rgba(255,255,255,0.02) 25px);
+  background: #e8e8ec;
 }
 
 .card-empty-state {
